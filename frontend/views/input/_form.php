@@ -1,5 +1,5 @@
 <?php
-
+use kartik\select2\Select2;
 use common\models\Category;
 use PhpParser\PrettyPrinter\Standard;
 use yii\base\Model;
@@ -16,11 +16,15 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'user_id')->textInput() ?>
-
     <?= $form->field($model, 'cost')->textInput()?>
 
-    <?= $form->field($model, 'category_id')->dropDownList(Category::InputSelected($model)) ?>
+    <?= $form->field($model, 'category_id')->widget(Select2::classname(), [
+    'data' => Category::InputSelected($model),
+    'options' => ['placeholder' => 'Kategoriyani tanlang'],
+    'pluginOptions' => [
+        'allowClear' => true
+    ],
+]); ?>
 
     <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 

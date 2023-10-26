@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Category;
 use common\models\Output;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -14,25 +15,35 @@ $this->title = Yii::t('app', 'Chiqim');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="output-index">
-
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a(Yii::t('app', 'Chiqimni kiritish'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php //echo $this->render('_search', ['model' => $searchModel]); ?>
+
+
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'user_id',
-            'cost',
-            'category_id',
+            [
+                'attribute' => 'cost',
+                'value' => function($data){
+                    return  number_format($data->cost, 2, ',', ' ');
+                }
+            ],
+            [
+                'attribute' => 'category_id',
+                'value'=>function($data){
+                    return $data->category->name;
+                },
+                'filter' => Category::OutputSelected(),
+                
+            ],
             'description',
             //'created_at',
             [

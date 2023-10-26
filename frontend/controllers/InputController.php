@@ -2,17 +2,19 @@
 
 namespace frontend\controllers;
 
+use common\controllers\MyController;
 use common\models\Input;
 use common\models\InputSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use Yii;
+use yii\filters\AccessControl;
 
 /**
  * InputController implements the CRUD actions for Input model.
  */
-class InputController extends Controller
+class InputController extends MyController
 {
     /**
      * @inheritDoc
@@ -28,6 +30,16 @@ class InputController extends Controller
                         'delete' => ['POST'],
                     ],
                 ],
+                // 'access' => [
+                //     'class' => AccessControl::class,
+                //     'rules' => [
+                //         [
+                //             'actions' => ['index','view','create','delete'],
+                //             'allow' => true,
+                //             'roles' => ['@'],
+                //         ],
+                //     ],
+                // ],
             ]
         );
     }
@@ -60,7 +72,6 @@ class InputController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
-
     /**
      * Creates a new Input model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -72,8 +83,10 @@ class InputController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
+                $model->user_id = \Yii::$app->user->identity->id;
                 $model->save();
-                return $this->redirect(['view', 'id' => $model->id]);
+                $model->save();
+                return $this->redirect(['index', 'id' => $model->id]);
             }
         } else {
             $model->loadDefaultValues();

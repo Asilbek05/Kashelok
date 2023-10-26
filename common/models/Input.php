@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use Symfony\Component\VarDumper\Cloner\Data;
 use Yii;
 
 /**
@@ -34,9 +35,10 @@ class Input extends \yii\db\ActiveRecord
     {
         return [
             [['user_id', 'category_id'], 'required'],
-            [['user_id', 'cost', 'category_id'], 'integer'],
+            [['user_id', 'category_id'], 'integer'],
+            [['cost'],'number'],
             [['created_at'], 'safe'],
-            [['created_at'], 'default', 'value' => date("Y-m-d H:i:s")],
+            [['created_at'], 'default', 'value' => date("m")],
             [['description'], 'string', 'max' => 45],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
@@ -51,9 +53,9 @@ class Input extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'cost' => 'Cost',
-            'category_id' => 'Category ID',
-            'description' => 'Description',
+            'cost' => 'Summa',
+            'category_id' => 'Kategoriya nomi',
+            'description' => 'Izoh',
             'created_at' => 'Created At',
         ];
     }
@@ -76,5 +78,32 @@ class Input extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+    public static function getCost(){
+        $month = date('m');
+        $params = [];
+        $user_id = Yii::$app->user->identity->getId();
+        $sql = 'SELECT SUM(cost) AS kirim
+        FROM input
+        Where ';
+        $sql .= 'user_id = :user_id';
+        $params[':user_id'] = $user_id;
+        $sql .= ' and created_at = :created_at';
+        $params[':created_at'] = $month;
+        $data = Yii::$app->getDb()->createCommand($sql, $params)->queryAll();
+        return $data;
+    }
+    public static function MonthCost($month){
+        $params = [];
+        $user_id = Yii::$app->user->identity->getId();
+        $sql = 'SELECT SUM(cost) AS kirim
+        FROM input
+        Where ';
+        $sql .= 'user_id = :user_id';
+        $params[':user_id'] = $user_id;
+        $sql .= ' and created_at = :created_at';
+        $params[':created_at'] = $month;
+        $data = Yii::$app->getDb()->createCommand($sql, $params)->queryAll();
+        return $data;
     }
 }

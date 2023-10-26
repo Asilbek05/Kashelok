@@ -5,6 +5,8 @@ namespace common\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\Input;
+use PHPUnit\Framework\MockObject\Builder\Identity;
+use Yii;
 
 /**
  * InputSearch represents the model behind the search form of `common\models\Input`.
@@ -17,7 +19,8 @@ class InputSearch extends Input
     public function rules()
     {
         return [
-            [['id', 'user_id', 'cost', 'category_id'], 'integer'],
+            [['id', 'user_id', 'category_id'], 'integer'],
+            [['cost'],'number'],
             [['description', 'created_at'], 'safe'],
         ];
     }
@@ -40,6 +43,7 @@ class InputSearch extends Input
      */
     public function search($params)
     {
+        $user = Yii::$app->user->identity->getId();
         $query = Input::find();
 
         // add conditions that should always apply here
@@ -66,7 +70,7 @@ class InputSearch extends Input
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
-
+        $query->andFilterWhere(['user_id' => $user]);
         return $dataProvider;
     }
 }

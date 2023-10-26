@@ -2,17 +2,19 @@
 
 namespace frontend\controllers;
 
+use common\controllers\MyController;
 use common\models\Category;
 use common\models\CategorySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use Yii;
+use yii\filters\AccessControl;
 
 /**
  * CategoryController implements the CRUD actions for Category model.
  */
-class CategoryController extends Controller
+class CategoryController extends MyController
 {
     /**
      * @inheritDoc
@@ -35,13 +37,13 @@ class CategoryController extends Controller
     /**
      * Lists all Category models.
      *
-     * @return string
+     * @return string4
      */
     public function actionIndex()
-    {
+    {        
         $searchModel = new CategorySearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -60,7 +62,6 @@ class CategoryController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
-
     /**
      * Creates a new Category model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -71,8 +72,11 @@ class CategoryController extends Controller
         $model = new Category();
         
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post())) {
+                Yii::$app->session->setFlash('success', 'Muvaffaqiyatli yaratildi!');
+                $model->user_id = \Yii::$app->user->identity->id;
+                $model->save();
+                return $this->redirect(['index', 'id' => $model->id]);
             }
         } else {
             $model->loadDefaultValues();
@@ -95,6 +99,7 @@ class CategoryController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('warning', 'Muvaffaqiyatli tahrirlandi!');
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -113,6 +118,7 @@ class CategoryController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        Yii::$app->session->setFlash('danger', 'Muvaffaqiyatli o`chirildi!');
 
         return $this->redirect(['index']);
     }

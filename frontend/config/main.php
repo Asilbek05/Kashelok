@@ -7,6 +7,7 @@ $params = array_merge(
 );
 
 return [
+    
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
@@ -39,7 +40,7 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
+            'rules' => [   
             ],
         ],
     ],
