@@ -85,12 +85,14 @@ class Category extends \yii\db\ActiveRecord
     }
     public static function InputSelected()
     {
-        $model = self::find()->where('type = 1')->all();
+        $user_id = Yii::$app->user->identity->getId();
+        $model = self::find()->andwhere('type = 1')->andWhere(['user_id' => $user_id])->all();
         return ArrayHelper::map($model, 'id', 'name');
     }
     public static function OutputSelected()
     {
-        $model = self::find()->where('type = 2')->all();
+        $user_id = Yii::$app->user->identity->getId();
+        $model = self::find()->andwhere('type = 2')->andWhere(['user_id' => $user_id])->all();
         return ArrayHelper::map($model,'id','name');
     }
 }

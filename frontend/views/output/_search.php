@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\ArrayHelper;
+use kartik\datetime\DateTimePicker;
 
 /** @var yii\web\View $this */
 /** @var common\models\OutputSearch $model */
@@ -15,17 +17,48 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <?= $form->field($model, 'id') ?>
+    <div class="row">
+        <div class="col-lg-3">
+            <?=DateTimePicker::widget([
+                    'name' => '',
 
-    <?= $form->field($model, 'user_id') ?>
+                    'options' => [
+                            'placeholder' => 'End Date Time',
+                            'autocomplete' => 'off'
+                            ],
+                    'convertFormat' => false,
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd hh:i:ss',
+                        'startDate' => '01-Mar-2014 12:00 AM',
+                        'todayHighlight' => true,
 
-    <?= $form->field($model, 'cost') ?>
+                    ]
+                ]); ?>
+        </div>
 
-    <?= $form->field($model, 'category_id') ?>
+        <div class="col-lg-3">
+            <?=  DateTimePicker::widget([
+                    'name' => 'datetime_11',
 
-    <?= $form->field($model, 'description') ?>
+                    'options' => [
+                            'placeholder' => 'End Date Time',
+                            'autocomplete' => 'off'
+                            ],
+                    'convertFormat' => false,
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd hh:i:ss',
+                        'startDate' => '01-Mar-2014 12:00 AM',
+                        'todayHighlight' => true,
 
-    <?php // echo $form->field($model, 'created_at') ?>
+                    ]
+                ]); ?>
+        </div>
+        <div class="col-lg-6">
+            <?php  echo $form->field($model, 'cost')->textInput();?>
+        </div>
+    
+    </div>
+    
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

@@ -5,6 +5,7 @@ namespace common\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\Output;
+use Yii;
 
 /**
  * OutputSearch represents the model behind the search form of `common\models\Output`.
@@ -17,7 +18,8 @@ class OutputSearch extends Output
     public function rules()
     {
         return [
-            [['id', 'user_id', 'cost', 'category_id'], 'integer'],
+            [['id', 'user_id', 'category_id'], 'integer'],
+            [['cost'],'number'], 
             [['description', 'created_at'], 'safe'],
         ];
     }
@@ -40,6 +42,7 @@ class OutputSearch extends Output
      */
     public function search($params)
     {
+        $user = Yii::$app->user->identity->getId();
         $query = Output::find();
 
         // add conditions that should always apply here
@@ -66,7 +69,7 @@ class OutputSearch extends Output
         ]);
 
         $query->andFilterWhere(['like', 'description', $this->description]);
-
+        $query->andFilterWhere(['user_id' => $user]);
         return $dataProvider;
     }
 }

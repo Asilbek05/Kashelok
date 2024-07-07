@@ -2,6 +2,10 @@
 
 namespace frontend\controllers;
 
+use common\controllers\MyController;
+
+use common\models\Input;
+use common\models\Output;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
@@ -11,45 +15,31 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use common\models\TimeCostSearch;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use yii\data\ArrayDataProvider;
 
 /**
  * Site controller
  */
-class SiteController extends Controller
+class SiteController extends MyController
 {
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => ['logout', 'signup'],
-                'rules' => [
-                    [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
+        return array_merge(parent::behaviors(), [
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
             ],
-        ];
+        ]);
     }
 
     /**
@@ -67,7 +57,7 @@ class SiteController extends Controller
             ],
         ];
     }
-
+    
     /**
      * Displays homepage.
      *
@@ -75,7 +65,11 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $searchModel = new TimeCostSearch();
+        
+        $input = Input::getCost();
+        $output = Output::getCost();
+        return $this->render('index',['input' => $input, 'output' => $output]);
     }
 
     /**
@@ -88,18 +82,27 @@ class SiteController extends Controller
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        
+        $this->layout = 'login';
+        $login = new LoginForm();
+        if ($login->load(Yii::$app->request->post()) && $login->login()) {
             return $this->goBack();
         }
 
-        $model->password = '';
+        $login->password = '';
+
+        $signup = new SignupForm();
+        if ($signup->load(Yii::$app->request->post()) && $signup->signup()) {
+            Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
+            return $this->goHome();
+        }
 
         return $this->render('login', [
-            'model' => $model,
+            'login' => $login,
+            'signup' => $signup,
         ]);
     }
+
     /**
      * Logs out the current user.
      *

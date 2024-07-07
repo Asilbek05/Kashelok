@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Category;
 use common\models\Input;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -10,7 +11,7 @@ use yii\grid\GridView;
 /** @var common\models\InputSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = Yii::t('app', 'Inputs');
+$this->title = Yii::t('app', 'Input');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="input-index">
@@ -18,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Kirimni kiritish'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Create input'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -28,13 +29,21 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'user_id',
-            'cost',
-            'category_id',
+            [
+                'attribute' => 'cost',
+                'value' => function($data){
+                    return  number_format($data->cost, 2, ',', ' ');
+                }
+            ],
+            [
+                'attribute' => 'category_id',
+                'value'=>function($data){
+                    return $data->category->name;
+                },
+                'filter' => Category::InputSelected()
+            ],
             'description',
-            //'created_at',
+            'created_at',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Input $model, $key, $index, $column) {

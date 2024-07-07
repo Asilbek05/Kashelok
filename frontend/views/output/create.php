@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\Output $model */
 
-$this->title = Yii::t('app', 'Chiqimni kiritish');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Chiqim'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Create output');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Output'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="output-create">

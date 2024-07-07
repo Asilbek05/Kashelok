@@ -2,16 +2,17 @@
 
 namespace frontend\controllers;
 
+use common\controllers\MyController;
 use common\models\Output;
+use common\models\Input;
 use common\models\OutputSearch;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use Yii;
 /**
  * OutputController implements the CRUD actions for Output model.
  */
-class OutputController extends Controller
+class OutputController extends MyController
 {
     /**
      * @inheritDoc
@@ -30,7 +31,6 @@ class OutputController extends Controller
             ]
         );
     }
-
     /**
      * Lists all Output models.
      *
@@ -70,13 +70,27 @@ class OutputController extends Controller
         $model = new Output();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-        } else {
+            
+                if ($model->load($this->request->post()) ) {
+
+                    $model->user_id = \Yii::$app->user->identity->id;
+                    $input = Input::getCost();
+                    $output = Output::getCost();
+                    
+                    if($input[0]['kirim'] - $output[0]['chiqim'] - $model->cost < 0)
+                    {
+                        Yii::$app->session->setFlash('danger', "Kiritilgan summa ".$input[0]['kirim'] - $output[0]['chiqim']." so'mdan ko'p bo'lishi mumkin emas");
+                        return $this->redirect(['/output/create']);
+                    }
+                    else{
+                        $model->save();
+                        return $this->redirect(['index', 'id' => $model->id]);
+                    }
+                }
+        }
+        else {
             $model->loadDefaultValues();
         }
-
         return $this->render('create', [
             'model' => $model,
         ]);
